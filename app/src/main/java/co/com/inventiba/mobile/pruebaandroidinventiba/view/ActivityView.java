@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,10 +27,12 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
     private ConstraintLayout pantallaLogueo;
     private LottieAnimationView imagenUsuarioLogueo;
     private EditText campoEmailLogueo, campoClaveLogueo;
+    private Button butonSignIn;
 
     // Elementos para la pantalla principal o de menu
     private ConstraintLayout pantallaPrincipal;
     private LinearLayout accionListar, accionAgregar;
+    private ImageView principalSignOut;
 
     // Elementos para la pantalla de listado
     private ConstraintLayout pantallaListado;
@@ -59,8 +62,12 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
         imagenUsuarioLogueo = findViewById(R.id.imagen_usuario);
         campoEmailLogueo = findViewById(R.id.campo_email);
         campoClaveLogueo = findViewById(R.id.campo_clave);
+        butonSignIn = findViewById(R.id.buton_signin);
+        butonSignIn.setOnClickListener(this);
         // Elementos de la ventana principal o de menu
         pantallaPrincipal = findViewById(R.id.pantalla_principal);
+        principalSignOut = findViewById(R.id.principal_signout);
+        principalSignOut.setOnClickListener(this);
         accionListar = findViewById(R.id.accion_ver_lista);
         accionListar.setOnClickListener(this);
         accionAgregar = findViewById(R.id.accion_agregar);
@@ -88,13 +95,13 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
      * - Que la clave coincida con "1234"
      * *******************************************/
 
-    private void validarCamposLogueo(View view){
-        if(utilidades.esCampoVacio(campoEmailLogueo)){
+    private void validarCamposLogueo(){
+        if(campoEmailLogueo.getText().toString().trim().isEmpty()){
             campoEmailLogueo.setError("El campo esta vacio");
             return;
         }
         // Validar que sea correo valido
-        if(utilidades.esCampoVacio(campoClaveLogueo)){
+        if(campoClaveLogueo.getText().toString().trim().isEmpty()){
             campoClaveLogueo.setError("El campo esta vacio");
             return;
         }
@@ -103,6 +110,8 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
             return;
         }
         irVentanaPrincipal();
+        campoEmailLogueo.setText("");
+        campoClaveLogueo.setText("");
     }
 
     /**********************************************
@@ -191,6 +200,12 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
                 irVentanaPrincipal();
                 break;
             case R.id.agregar_signout:
+                signOut();
+                break;
+            case R.id.buton_signin:
+                validarCamposLogueo();
+                break;
+            case R.id.principal_signout:
                 signOut();
                 break;
             default:
