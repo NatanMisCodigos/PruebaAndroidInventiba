@@ -5,9 +5,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
 
@@ -21,10 +20,14 @@ public class ActivityView extends AppCompatActivity {
     // Otras variables
     private Utilidades utilidades;
 
-    // Elementos para la pantalla de logueo.
+    // Elementos para la pantalla de logueo
     private ConstraintLayout pantallaLogueo;
     private LottieAnimationView imagenUsuarioLogueo;
     private EditText campoEmailLogueo, campoClaveLogueo;
+
+    // Elementos para la pantalla principal o de menu
+    private ConstraintLayout pantallaPrincipal;
+    private LinearLayout accionListar, accionAgregar;
 
 
     @Override
@@ -40,10 +43,15 @@ public class ActivityView extends AppCompatActivity {
      * *******************************************/
 
     private void initItems(){
+        // Elementos de la ventana de logueo
         pantallaLogueo = findViewById(R.id.pantalla_logueo);
         imagenUsuarioLogueo = findViewById(R.id.imagen_usuario);
         campoEmailLogueo = findViewById(R.id.campo_email);
         campoClaveLogueo = findViewById(R.id.campo_clave);
+        // Elementos de la ventana principal o de menu
+        pantallaPrincipal = findViewById(R.id.pantalla_principal);
+        accionListar = findViewById(R.id.accion_ver_lista);
+        accionAgregar = findViewById(R.id.accion_agregar);
     }
 
     /**********************************************
@@ -68,9 +76,7 @@ public class ActivityView extends AppCompatActivity {
             campoClaveLogueo.setError("La clave es incorrecta");
             return;
         }
-
-        usuarioLogueado();
-
+        irVentanaPrincipal();
     }
 
     /**********************************************
@@ -78,8 +84,24 @@ public class ActivityView extends AppCompatActivity {
      * y muestro la ventana principal
      * *******************************************/
 
-    private void usuarioLogueado(){
+    private void irVentanaPrincipal(){
         pantallaLogueo.setVisibility(View.GONE);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        pantallaPrincipal.setVisibility(View.VISIBLE);
+    }
+
+    /**********************************************
+     * Con este metodo oculto la pantalla de logueo
+     * y muestro la ventana principal
+     * *******************************************/
+
+    private void irVentanaListar(){
+        pantallaLogueo.setVisibility(View.GONE);
+        pantallaPrincipal.setVisibility(View.GONE);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
