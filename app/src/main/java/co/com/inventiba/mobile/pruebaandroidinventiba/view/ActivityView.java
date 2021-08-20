@@ -2,10 +2,12 @@ package co.com.inventiba.mobile.pruebaandroidinventiba.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -13,7 +15,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import co.com.inventiba.mobile.pruebaandroidinventiba.R;
 import co.com.inventiba.mobile.pruebaandroidinventiba.Utilidades;
 
-public class ActivityView extends AppCompatActivity {
+public class ActivityView extends AppCompatActivity implements View.OnClickListener {
 
     // Trato de implementar SingleActivity *
 
@@ -28,6 +30,15 @@ public class ActivityView extends AppCompatActivity {
     // Elementos para la pantalla principal o de menu
     private ConstraintLayout pantallaPrincipal;
     private LinearLayout accionListar, accionAgregar;
+
+    // Elementos para la pantalla de listado
+    private ConstraintLayout pantallaListado;
+    private ImageView listadoAPrincipal, listadoSignOut;
+    private RecyclerView recyclerList;
+
+    // Elementos para la pantalla de agregar
+    private ConstraintLayout pantallaAgregar;
+    private ImageView agregarAPrincipal, agregarSignOut;
 
 
     @Override
@@ -51,7 +62,22 @@ public class ActivityView extends AppCompatActivity {
         // Elementos de la ventana principal o de menu
         pantallaPrincipal = findViewById(R.id.pantalla_principal);
         accionListar = findViewById(R.id.accion_ver_lista);
+        accionListar.setOnClickListener(this);
         accionAgregar = findViewById(R.id.accion_agregar);
+        accionAgregar.setOnClickListener(this);
+        // Elementos de la ventana del listado
+        pantallaListado = findViewById(R.id.pantalla_listado);
+        listadoAPrincipal = findViewById(R.id.listado_a_principal);
+        listadoAPrincipal.setOnClickListener(this);
+        listadoSignOut = findViewById(R.id.listado_signout);
+        listadoSignOut.setOnClickListener(this);
+        recyclerList = findViewById(R.id.recycler_list);
+        // Elementos de la ventana agregar
+        pantallaAgregar = findViewById(R.id.pantalla_agregar);
+        agregarAPrincipal = findViewById(R.id.agregar_a_principal);
+        agregarAPrincipal.setOnClickListener(this);
+        agregarSignOut = findViewById(R.id.agregar_signout);
+        agregarSignOut.setOnClickListener(this);
     }
 
     /**********************************************
@@ -86,6 +112,8 @@ public class ActivityView extends AppCompatActivity {
 
     private void irVentanaPrincipal(){
         pantallaLogueo.setVisibility(View.GONE);
+        pantallaAgregar.setVisibility(View.GONE);
+        pantallaListado.setVisibility(View.GONE);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -95,19 +123,78 @@ public class ActivityView extends AppCompatActivity {
     }
 
     /**********************************************
-     * Con este metodo oculto la pantalla de logueo
-     * y muestro la ventana principal
+     * Con este metodo oculto las ventanas
+     * excepto la de listar
      * *******************************************/
 
     private void irVentanaListar(){
         pantallaLogueo.setVisibility(View.GONE);
         pantallaPrincipal.setVisibility(View.GONE);
+        pantallaAgregar.setVisibility(View.GONE);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        pantallaListado.setVisibility(View.VISIBLE);
     }
 
+    /**********************************************
+     * Con este metodo oculto las ventanas excepto
+     * la de agregar
+     * *******************************************/
+
+    private void irVentanaAgregar(){
+        pantallaLogueo.setVisibility(View.GONE);
+        pantallaPrincipal.setVisibility(View.GONE);
+        pantallaListado.setVisibility(View.GONE);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        pantallaAgregar.setVisibility(View.VISIBLE);
+    }
+
+    /**********************************************
+     * Con este metodo simulo un deslogueo
+     * *******************************************/
+
+    private void signOut(){
+        pantallaAgregar.setVisibility(View.GONE);
+        pantallaPrincipal.setVisibility(View.GONE);
+        pantallaListado.setVisibility(View.GONE);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        pantallaLogueo.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.accion_ver_lista:
+                irVentanaListar();
+                break;
+            case R.id.accion_agregar:
+                irVentanaAgregar();
+                break;
+            case R.id.listado_a_principal:
+                irVentanaPrincipal();
+                break;
+            case R.id.listado_signout:
+                signOut();
+                break;
+            case R.id.agregar_a_principal:
+                irVentanaPrincipal();
+                break;
+            case R.id.agregar_signout:
+                signOut();
+                break;
+            default:
+                break;
+        }
+    }
 }
