@@ -2,26 +2,36 @@ package co.com.inventiba.mobile.pruebaandroidinventiba.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 
 import co.com.inventiba.mobile.pruebaandroidinventiba.R;
 import co.com.inventiba.mobile.pruebaandroidinventiba.Utilidades;
+import co.com.inventiba.mobile.pruebaandroidinventiba.interfaces.PruebaInterfaces;
+import co.com.inventiba.mobile.pruebaandroidinventiba.model.RecyclerAdapter;
+import co.com.inventiba.mobile.pruebaandroidinventiba.presenter.Presenter;
 
-public class ActivityView extends AppCompatActivity implements View.OnClickListener {
+public class ActivityView extends AppCompatActivity implements View.OnClickListener, PruebaInterfaces.View {
 
     // Trato de implementar SingleActivity *
 
     // Otras variables
     private Utilidades utilidades;
+    private Context context = this;
+    private RecyclerAdapter recyclerAdapter;
+    private PruebaInterfaces.Presenter presenter = new Presenter(this, context);
 
     // Elementos para la pantalla de logueo
     private ConstraintLayout pantallaLogueo;
@@ -42,6 +52,8 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
     // Elementos para la pantalla de agregar
     private ConstraintLayout pantallaAgregar;
     private ImageView agregarAPrincipal, agregarSignOut;
+    private EditText campoIdAgregar, campoTituloAgregar;
+    private ImageView accionAgregarElemento;
 
 
     @Override
@@ -85,6 +97,10 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
         agregarAPrincipal.setOnClickListener(this);
         agregarSignOut = findViewById(R.id.agregar_signout);
         agregarSignOut.setOnClickListener(this);
+        campoIdAgregar = findViewById(R.id.agregar_campo_id);
+        campoTituloAgregar = findViewById(R.id.agregar_campo_title);
+        accionAgregarElemento = findViewById(R.id.accion_agregar_elemento);
+        accionAgregarElemento.setOnClickListener(this);
     }
 
     /**********************************************
@@ -123,12 +139,12 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
         pantallaLogueo.setVisibility(View.GONE);
         pantallaAgregar.setVisibility(View.GONE);
         pantallaListado.setVisibility(View.GONE);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        pantallaPrincipal.setVisibility(View.VISIBLE);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pantallaPrincipal.setVisibility(View.VISIBLE);
+            }
+        }, 800);
     }
 
     /**********************************************
@@ -137,15 +153,21 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
      * *******************************************/
 
     private void irVentanaListar(){
+        // Con esta validacion me aseguro de consumir el servicio solo una vez
+        if(recyclerAdapter != null){
+            showListJson(recyclerAdapter);
+        }else{
+            presenter.getListJson();
+        }
         pantallaLogueo.setVisibility(View.GONE);
         pantallaPrincipal.setVisibility(View.GONE);
         pantallaAgregar.setVisibility(View.GONE);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        pantallaListado.setVisibility(View.VISIBLE);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pantallaListado.setVisibility(View.VISIBLE);
+            }
+        }, 800);
     }
 
     /**********************************************
@@ -157,12 +179,31 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
         pantallaLogueo.setVisibility(View.GONE);
         pantallaPrincipal.setVisibility(View.GONE);
         pantallaListado.setVisibility(View.GONE);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pantallaAgregar.setVisibility(View.VISIBLE);
+            }
+        }, 800);
+    }
+
+    /**********************************************
+     * Con este metodo simulo un deslogueo
+     * *******************************************/
+
+    private void validarCamposAgregar(){
+        if(campoIdAgregar.getText().toString().trim().isEmpty()){
+            campoIdAgregar.setError("El campo esta vacio");
+            return;
         }
-        pantallaAgregar.setVisibility(View.VISIBLE);
+        if(campoTituloAgregar.getText().toString().trim().isEmpty()){
+            campoTituloAgregar.setError("El campo esta vacio");
+            return;
+        }
+        irVentanaPrincipal();
+        campoIdAgregar.setText("");
+        campoTituloAgregar.setText("");
+        Toast.makeText(context, "El elemento ha sido agregado a la lista", Toast.LENGTH_SHORT).show();
     }
 
     /**********************************************
@@ -173,12 +214,13 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
         pantallaAgregar.setVisibility(View.GONE);
         pantallaPrincipal.setVisibility(View.GONE);
         pantallaListado.setVisibility(View.GONE);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        pantallaLogueo.setVisibility(View.VISIBLE);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pantallaLogueo.setVisibility(View.VISIBLE);
+                campoEmailLogueo.requestFocus();
+            }
+        }, 800);
     }
 
     @Override
@@ -208,8 +250,23 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
             case R.id.principal_signout:
                 signOut();
                 break;
+            case R.id.accion_agregar_elemento:
+                validarCamposAgregar();
+                break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void showListJson(RecyclerAdapter adapter) {
+        recyclerList.setLayoutManager(new LinearLayoutManager(context));
+        // Con esta validacion me aseguro de saber si el adaptador ya fue llenado antes
+        if(recyclerAdapter != null){
+            recyclerList.setAdapter(recyclerAdapter);
+        }else{
+            recyclerAdapter = adapter;
+            recyclerList.setAdapter(recyclerAdapter);
         }
     }
 }
