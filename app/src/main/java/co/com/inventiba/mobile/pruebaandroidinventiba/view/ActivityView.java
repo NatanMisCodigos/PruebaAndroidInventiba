@@ -5,6 +5,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,9 +14,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.emredavarci.noty.Noty;
 
 import co.com.inventiba.mobile.pruebaandroidinventiba.R;
 import co.com.inventiba.mobile.pruebaandroidinventiba.Utilidades;
@@ -28,7 +31,6 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
     // Trato de implementar SingleActivity *
 
     // Otras variables
-    private Utilidades utilidades;
     private Context context = this;
     private RecyclerAdapter recyclerAdapter;
     private PruebaInterfaces.Presenter presenter = new Presenter(this, context);
@@ -112,6 +114,10 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
      * *******************************************/
 
     private void validarCamposLogueo(){
+        if(!Utilidades.isConnected(context)){
+            Utilidades.showMessage(context, this, "No hay conexión a Internet");
+            return;
+        }
         if(campoEmailLogueo.getText().toString().trim().isEmpty()){
             campoEmailLogueo.setError("El campo esta vacio");
             return;
@@ -203,7 +209,7 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
         irVentanaPrincipal();
         campoIdAgregar.setText("");
         campoTituloAgregar.setText("");
-        Toast.makeText(context, "El elemento ha sido agregado a la lista", Toast.LENGTH_SHORT).show();
+        Utilidades.showMessage(context, this, "Elemento añadido a la lista");
     }
 
     /**********************************************
@@ -256,6 +262,12 @@ public class ActivityView extends AppCompatActivity implements View.OnClickListe
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Utilidades.hideNotificationBar(this);
     }
 
     @Override
